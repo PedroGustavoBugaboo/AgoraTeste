@@ -126,7 +126,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         public void JoinChannel()
         {
             var ret = RtcEngine.JoinChannel(_token, _channelName, "", 0);
-            RtcEngine.MuteAllRemoteAudioStreams(true);
+            // RtcEngine.MuteAllRemoteAudioStreams(true);
             Debug.Log("JoinChannel returns: " + ret);
         }
 
