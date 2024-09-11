@@ -10,7 +10,6 @@ using UnityEngine.UI;
 public class AgoraSignalManager : MonoBehaviour
 {
     private static AgoraSignalManager instance;
-
     public static AgoraSignalManager Instance
     {
         get
@@ -166,7 +165,28 @@ public class AgoraSignalManager : MonoBehaviour
                 unmuteUserBtn.interactable = false;
                 muteMic.interactable = true;
             }
-            else muteMic.interactable = false;
+            else
+            {
+                muteMic.interactable = false;
+                unmuteUserBtn.GetComponentInChildren<TextMeshProUGUI>().text = $"Retake mic";
+            }
         }
+    }
+
+    public void EnableLoopBack()
+    {
+        _engine.EnableLocalAudio(true);
+        int ret = _engine.EnableInEarMonitoring(true, 0);
+        if (ret != 0)
+        {
+            Debug.LogError("Falha ao habilitar monitoramento de áudio, código de erro: " + ret);
+        }
+        else
+        {
+            Debug.Log("Monitoramento de áudio habilitado com sucesso.");
+        }
+        
+        int volume = 100;
+        ret = _engine.SetInEarMonitoringVolume(volume);
     }
 }

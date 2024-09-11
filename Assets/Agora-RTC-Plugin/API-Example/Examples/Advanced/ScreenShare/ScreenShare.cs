@@ -47,6 +47,8 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         private Rect _originThumRect = new Rect(0, 0, 500, 260);
         private Rect _originIconRect = new Rect(0, 0, 289, 280);
 
+        private uint trackId;
+
         // Use this for initialization
         private void Start()
         {
@@ -108,8 +110,8 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
             RtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
             
             var config = new AudioTrackConfig();
-            RtcEngine.MuteLocalAudioStream(true);
-            RtcEngine.CreateCustomAudioTrack(AUDIO_TRACK_TYPE.AUDIO_TRACK_DIRECT, config);
+            // RtcEngine.MuteLocalAudioStream(true);
+            trackId = RtcEngine.CreateCustomAudioTrack(AUDIO_TRACK_TYPE.AUDIO_TRACK_DIRECT, config);
         }
 
         #region -- Button Events ---
@@ -137,6 +139,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
             ChannelMediaOptions options = new ChannelMediaOptions();
             options.publishCameraTrack.SetValue(false);
             options.publishScreenTrack.SetValue(true);
+            RtcEngine.AdjustRecordingSignalVolume(200);
 
 #if UNITY_ANDROID || UNITY_IPHONE
             options.publishScreenCaptureAudio.SetValue(true);
@@ -163,6 +166,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
             ChannelMediaOptions options = new ChannelMediaOptions();
             options.publishCameraTrack.SetValue(true);
             options.publishScreenTrack.SetValue(false);
+            RtcEngine.EnableLoopbackRecording(true);
 
 #if UNITY_ANDROID || UNITY_IPHONE
             options.publishScreenCaptureAudio.SetValue(false);
@@ -234,6 +238,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
             }
 
 #endif
+            
 
             PublishBtn.gameObject.SetActive(true);
             UnpublishBtn.gameObject.SetActive(true);
