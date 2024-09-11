@@ -173,20 +173,8 @@ public class AgoraSignalManager : MonoBehaviour
         }
     }
 
-    public void EnableLoopBack()
+    public void EnableLoopBack(bool val)
     {
-        _engine.EnableLocalAudio(true);
-        int ret = _engine.EnableInEarMonitoring(true, 0);
-        if (ret != 0)
-        {
-            Debug.LogError("Falha ao habilitar monitoramento de áudio, código de erro: " + ret);
-        }
-        else
-        {
-            Debug.Log("Monitoramento de áudio habilitado com sucesso.");
-        }
-        
-        int volume = 100;
-        ret = _engine.SetInEarMonitoringVolume(volume);
+        _engine.EnableLoopbackRecording(val);
     }
 }

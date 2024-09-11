@@ -107,6 +107,8 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         {
             RtcEngine.EnableAudio();
             RtcEngine.EnableVideo();
+            
+            RtcEngine.SetChannelProfile( CHANNEL_PROFILE_TYPE.CHANNEL_PROFILE_LIVE_BROADCASTING );
             RtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
             
             var config = new AudioTrackConfig();
@@ -166,7 +168,6 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
             ChannelMediaOptions options = new ChannelMediaOptions();
             options.publishCameraTrack.SetValue(true);
             options.publishScreenTrack.SetValue(false);
-            RtcEngine.EnableLoopbackRecording(true);
 
 #if UNITY_ANDROID || UNITY_IPHONE
             options.publishScreenCaptureAudio.SetValue(false);
@@ -213,12 +214,12 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
             var nRet = RtcEngine.StartScreenCapture(parameters2);
             this.Log.UpdateLog("StartScreenCapture :" + nRet);
 #else
+            // RtcEngine.EnableLoopbackRecording( true );
             RtcEngine.StopScreenCapture();
+            
             if (WinIdSelect == null) return;
             var option = WinIdSelect.options[WinIdSelect.value].text;
             if (string.IsNullOrEmpty(option)) return;
-            
-            
             
             if (option.Contains("ScreenCaptureSourceType_Window"))
             {
@@ -239,12 +240,10 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
 
 #endif
             
-
             PublishBtn.gameObject.SetActive(true);
             UnpublishBtn.gameObject.SetActive(true);
             //OnPublishButtonClick();
             ScreenShare.MakeVideoView(0, "", VIDEO_SOURCE_TYPE.VIDEO_SOURCE_SCREEN);
-
         }
 
         public void OnStopShareBtnClick()
@@ -257,6 +256,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
             UnpublishBtn.gameObject.SetActive(false);
 
             DestroyVideoView(0);
+            // RtcEngine.EnableLoopbackRecording( false );
             RtcEngine.StopScreenCapture();
         }
 
