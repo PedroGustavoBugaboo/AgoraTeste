@@ -108,13 +108,12 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         private void SetBasicConfiguration()
         {
             RtcEngine.EnableAudio();
-            RtcEngine.EnableVideo();
+            // RtcEngine.EnableVideo();
             
             RtcEngine.SetChannelProfile( CHANNEL_PROFILE_TYPE.CHANNEL_PROFILE_LIVE_BROADCASTING );
             RtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
             
             var config = new AudioTrackConfig();
-            // RtcEngine.MuteLocalAudioStream(true);
             trackId = RtcEngine.CreateCustomAudioTrack(AUDIO_TRACK_TYPE.AUDIO_TRACK_DIRECT, config);
         }
 
@@ -134,7 +133,6 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         {
             var ret = RtcEngine.JoinChannel(_token, _channelName, "", 0);
             PrepareScreenCapture();
-            // RtcEngine.MuteAllRemoteAudioStreams(true);
             Debug.Log("JoinChannel returns: " + ret);
         }
 
@@ -147,9 +145,9 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         {
             int ret = 0;
             ChannelMediaOptions options = new ChannelMediaOptions();
-            options.publishCameraTrack.SetValue(false);
+            // options.publishCameraTrack.SetValue(false);
             options.publishScreenTrack.SetValue(true);
-            RtcEngine.AdjustRecordingSignalVolume(200);
+            RtcEngine.AdjustRecordingSignalVolume(300);
 
 #if UNITY_ANDROID || UNITY_IPHONE
             options.publishScreenCaptureAudio.SetValue(true);
@@ -174,7 +172,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         public void OnUnplishButtonClick()
         {
             ChannelMediaOptions options = new ChannelMediaOptions();
-            options.publishCameraTrack.SetValue(true);
+            // options.publishCameraTrack.SetValue(true);
             options.publishScreenTrack.SetValue(false);
 
 #if UNITY_ANDROID || UNITY_IPHONE
@@ -222,9 +220,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
             var nRet = RtcEngine.StartScreenCapture(parameters2);
             this.Log.UpdateLog("StartScreenCapture :" + nRet);
 #else
-            // RtcEngine.EnableLoopbackRecording( true );
             RtcEngine.StopScreenCapture();
-            
             if (WinIdSelect == null) return;
             var option = WinIdSelect.options[WinIdSelect.value].text;
             if (string.IsNullOrEmpty(option)) return;
@@ -250,7 +246,6 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
             
             PublishBtn.gameObject.SetActive(true);
             UnpublishBtn.gameObject.SetActive(true);
-            //OnPublishButtonClick();
             ScreenShare.MakeVideoView(0, "", VIDEO_SOURCE_TYPE.VIDEO_SOURCE_SCREEN);
         }
 
