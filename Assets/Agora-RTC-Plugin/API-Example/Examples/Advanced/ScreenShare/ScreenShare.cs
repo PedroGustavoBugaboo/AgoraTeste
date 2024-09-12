@@ -101,7 +101,9 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
             RtcEngine.Initialize(context);
             RtcEngine.InitEventHandler(handler);
             
-            GameObject.Find("InitButton").GetComponent<Button>().onClick.Invoke();
+            var obj = GameObject.Find("InitButton").GetComponent<Button>();
+            Debug.Log(obj.name);
+            obj.onClick.Invoke();
             Debug.Log("Iniciouuuuu");
         }
 

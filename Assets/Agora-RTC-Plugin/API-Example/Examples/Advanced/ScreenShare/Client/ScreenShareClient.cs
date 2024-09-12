@@ -1,51 +1,18 @@
-using System;
-using System.Linq;
 using Agora.Rtc;
-using io.agora.rtc.demo;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare.Client
 {
     public class ScreenShareClient : MonoBehaviour
     {
-        [FormerlySerializedAs("appIdInput")]
-        [SerializeField]
-        private AppIdInput _appIdInput;
-
-        [Header("_____________Basic Configuration_____________")]
-        [FormerlySerializedAs("APP_ID")]
-        [SerializeField]
         private string _appID = "";
-
-        [FormerlySerializedAs("TOKEN")]
-        [SerializeField]
         private string _token = "";
-
-        [FormerlySerializedAs("CHANNEL_NAME")]
-        [SerializeField]
         private string _channelName = "";
 
         public Text LogText;
         internal Logger Log;
         internal IRtcEngine RtcEngine = null;
-        private ScreenCaptureSourceInfo[] _screenCaptureSourceInfos;
-
-        public Dropdown WinIdSelect;
-        public Button GetSourceBtn;
-        public Button StartShareBtn;
-        public Button StopShareBtn;
-        public Button UpdateShareBtn;
-        public Button PublishBtn;
-        public Button UnpublishBtn;
-        public Button ShowThumbBtn;
-        public Button ShowIconBtn;
-        public RawImage IconImage;
-        public RawImage ThumbImage;
-
-        private Rect _originThumRect = new Rect(0, 0, 500, 260);
-        private Rect _originIconRect = new Rect(0, 0, 289, 280);
 
         private uint trackId;
 
@@ -59,17 +26,6 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare.Client
             {
                 InitEngine();
                 SetBasicConfiguration();
-#if UNITY_ANDROID || UNITY_IPHONE
-                GetSourceBtn.gameObject.SetActive(false);
-                WinIdSelect.gameObject.SetActive(false);
-                UpdateShareBtn.gameObject.SetActive(true);
-                IconImage.gameObject.SetActive(false);
-                ThumbImage.gameObject.SetActive(false);
-                ShowThumbBtn.gameObject.SetActive(false);
-                ShowIconBtn.gameObject.SetActive(false);
-#else
-                UpdateShareBtn.gameObject.SetActive(false);
-#endif
                 JoinChannel();   
             }
         }
@@ -132,32 +88,14 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare.Client
             var ret = RtcEngine.JoinChannel(_token, _channelName, "", 0);
             // PrepareScreenCapture();
             Debug.Log("JoinChannel returns: " + ret);
+            
+            // Debug.Log(RtcEngine.get);
         }
 
         public void LeaveChannel()
         {
             RtcEngine.LeaveChannel();
         }
-
-        // public void PrepareScreenCapture()
-        // {
-        //     if (WinIdSelect == null || RtcEngine == null) return;
-        //
-        //     WinIdSelect.ClearOptions();
-        //
-        //     SIZE t = new SIZE();
-        //     t.width = 1280;
-        //     t.height = 720;
-        //     SIZE s = new SIZE();
-        //     s.width = 640;
-        //     s.height = 640;
-        //     _screenCaptureSourceInfos = RtcEngine.GetScreenCaptureSources(t, s, true);
-        //
-        //     WinIdSelect.AddOptions(_screenCaptureSourceInfos.Select(w =>
-        //             new Dropdown.OptionData(
-        //                 string.Format("{0}: {1}-{2} | {3}", w.type, w.sourceName, w.sourceTitle, w.sourceId)))
-        //         .ToList());
-        // }
 
         #endregion
 
@@ -177,39 +115,39 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare.Client
 
         #region -- Video Render UI Logic ---
 
-        // internal static void MakeVideoView(uint uid, string channelId = "", VIDEO_SOURCE_TYPE videoSourceType = VIDEO_SOURCE_TYPE.VIDEO_SOURCE_CAMERA)
-        // {
-        //     var go = GameObject.Find(uid.ToString());
-        //     if (!ReferenceEquals(go, null))
-        //     {
-        //         return; // reuse
-        //     }
-        //
-        //     // create a GameObject and assign to this new user
-        //     var videoSurface = MakeImageSurface(uid.ToString());
-        //     if (ReferenceEquals(videoSurface, null)) return;
-        //     // configure videoSurface
-        //     videoSurface.SetForUser(uid, channelId, videoSourceType);
-        //     videoSurface.SetEnable(true);
-        //
-        //     videoSurface.OnTextureSizeModify += (int width, int height) =>
-        //     {
-        //         var transform = videoSurface.GetComponent<RectTransform>();
-        //         if (transform)
-        //         {
-        //             //If render in RawImage. just set rawImage size.
-        //             transform.sizeDelta = new Vector2(width / 2, height / 2);
-        //             transform.localScale = videoSourceType == VIDEO_SOURCE_TYPE.VIDEO_SOURCE_SCREEN ? new Vector3(-1, 1, 1) : Vector3.one;
-        //         }
-        //         else
-        //         {
-        //             //If render in MeshRenderer, just set localSize with MeshRenderer
-        //             float scale = (float)height / (float)width;
-        //             videoSurface.transform.localScale = new Vector3(-1, 1, scale);
-        //         }
-        //         Debug.Log("OnTextureSizeModify: " + width + "  " + height);
-        //     };
-        // }
+        internal static void MakeVideoView(uint uid, string channelId = "", VIDEO_SOURCE_TYPE videoSourceType = VIDEO_SOURCE_TYPE.VIDEO_SOURCE_CAMERA)
+        {
+            var go = GameObject.Find(uid.ToString());
+            if (!ReferenceEquals(go, null))
+            {
+                return; // reuse
+            }
+        
+            // create a GameObject and assign to this new user
+            var videoSurface = MakeImageSurface(uid.ToString());
+            if (ReferenceEquals(videoSurface, null)) return;
+            // configure videoSurface
+            videoSurface.SetForUser(uid, channelId, videoSourceType);
+            videoSurface.SetEnable(true);
+        
+            videoSurface.OnTextureSizeModify += (int width, int height) =>
+            {
+                var transform = videoSurface.GetComponent<RectTransform>();
+                if (transform)
+                {
+                    //If render in RawImage. just set rawImage size.
+                    transform.sizeDelta = new Vector2(width / 2, height / 2);
+                    transform.localScale = videoSourceType == VIDEO_SOURCE_TYPE.VIDEO_SOURCE_SCREEN ? new Vector3(-1, 1, 1) : Vector3.one;
+                }
+                else
+                {
+                    //If render in MeshRenderer, just set localSize with MeshRenderer
+                    float scale = (float)height / (float)width;
+                    videoSurface.transform.localScale = new Vector3(-1, 1, scale);
+                }
+                Debug.Log("OnTextureSizeModify: " + width + "  " + height);
+            };
+        }
         //
         // // VIDEO TYPE 1: 3D Object
         // private static VideoSurface MakePlaneSurface(string goName)
@@ -239,49 +177,40 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare.Client
         // }
         //
         // // Video TYPE 2: RawImage
-        // private static VideoSurface MakeImageSurface(string goName)
-        // {
-        //     var go = new GameObject();
-        //
-        //     if (go == null)
-        //     {
-        //         return null;
-        //     }
-        //
-        //     go.name = goName;
-        //     // to be renderered onto
-        //     go.AddComponent<RawImage>();
-        //     // make the object draggable
-        //     go.AddComponent<UIElementDrag>();
-        //     var canvas = GameObject.Find("VideoCanvas");
-        //     if (canvas != null)
-        //     {
-        //         go.transform.parent = canvas.transform;
-        //         Debug.Log("add video view");
-        //     }
-        //     else
-        //     {
-        //         Debug.Log("Canvas is null video view");
-        //     }
-        //
-        //     // set up transform
-        //     go.transform.Rotate(0f, 0.0f, 180.0f);
-        //     go.transform.localPosition = Vector3.zero;
-        //     go.transform.localScale = new Vector3(3f, 4f, 1f);
-        //
-        //     // configure videoSurface
-        //     var videoSurface = go.AddComponent<VideoSurface>();
-        //     return videoSurface;
-        // }
-        //
-        // internal static void DestroyVideoView(uint uid)
-        // {
-        //     var go = GameObject.Find(uid.ToString());
-        //     if (!ReferenceEquals(go, null))
-        //     {
-        //         Destroy(go);
-        //     }
-        // }
+        private static VideoSurface MakeImageSurface(string goName)
+        {
+            var go = new GameObject();
+        
+            if (go == null)
+            {
+                return null;
+            }
+        
+            go.name = goName;
+            // to be renderered onto
+            go.AddComponent<RawImage>();
+            // make the object draggable
+            go.AddComponent<UIElementDrag>();
+            var canvas = GameObject.Find("VideoCanvas");
+            if (canvas != null)
+            {
+                go.transform.parent = canvas.transform;
+                Debug.Log("add video view");
+            }
+            else
+            {
+                Debug.Log("Canvas is null video view");
+            }
+        
+            // set up transform
+            go.transform.Rotate(0f, 0.0f, 180.0f);
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localScale = new Vector3(3f, 4f, 1f);
+        
+            // configure videoSurface
+            var videoSurface = go.AddComponent<VideoSurface>();
+            return videoSurface;
+        }
 
         #endregion
     }
