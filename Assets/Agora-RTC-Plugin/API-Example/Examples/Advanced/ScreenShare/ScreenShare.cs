@@ -273,7 +273,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
             //only work in ios or android
             var config = new ScreenCaptureParameters2();
             config.captureAudio = true;
-            config.captureVideo = true;
+            // config.captureVideo = true;
             config.videoParams.dimensions.width = 960;
             config.videoParams.dimensions.height = 640;
             var nRet = RtcEngine.UpdateScreenCapture(config);
