@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 using System.Linq;
-using UnityEngine;
-using UnityEngine.UI;
 using Agora.Rtc;
-using UnityEngine.Serialization;
 using io.agora.rtc.demo;
+using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
-namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
+namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare.Client
 {
-    public class ScreenShare : MonoBehaviour
+    public class ScreenShareClient : MonoBehaviour
     {
         [FormerlySerializedAs("appIdInput")]
         [SerializeField]
@@ -111,7 +111,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
             // RtcEngine.EnableVideo();
             
             RtcEngine.SetChannelProfile( CHANNEL_PROFILE_TYPE.CHANNEL_PROFILE_LIVE_BROADCASTING );
-            RtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+            RtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
             
             var config = new AudioTrackConfig();
             trackId = RtcEngine.CreateCustomAudioTrack(AUDIO_TRACK_TYPE.AUDIO_TRACK_DIRECT, config);
@@ -455,9 +455,9 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
 
     internal class UserEventHandler : IRtcEngineEventHandler
     {
-        private readonly ScreenShare _desktopScreenShare;
+        private readonly ScreenShareClient _desktopScreenShare;
 
-        internal UserEventHandler(ScreenShare desktopScreenShare)
+        internal UserEventHandler(ScreenShareClient desktopScreenShare)
         {
             _desktopScreenShare = desktopScreenShare;
         }
@@ -514,5 +514,5 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         }
     }
 
-    #endregion
+    #endregion 
 }
