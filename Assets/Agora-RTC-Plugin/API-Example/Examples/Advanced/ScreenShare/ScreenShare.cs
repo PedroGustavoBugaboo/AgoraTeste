@@ -49,6 +49,8 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
 
         private uint trackId;
 
+        [SerializeField] private DataLogin _dataLogin;
+
         // Use this for initialization
         private void Start()
         {
@@ -68,6 +70,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
 #else
                 UpdateShareBtn.gameObject.SetActive(false);
 #endif
+                JoinChannel();   
             }
         }
 
@@ -81,10 +84,9 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         [ContextMenu("ShowAgoraBasicProfileData")]
         private void LoadAssetData()
         {
-            if (_appIdInput == null) return;
-            _appID = _appIdInput.appID;
-            _token = _appIdInput.token;
-            _channelName = _appIdInput.channelName;
+            _appID = _dataLogin._appID;
+            _token = _dataLogin._token;
+            _channelName = _dataLogin._channelName;
         }
 
         private void InitEngine()
@@ -118,14 +120,20 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
 
         #region -- Button Events ---
 
-        public void MuteMic(bool val)
+        public void MuteLocal(bool val)
         {
             RtcEngine.MuteLocalAudioStream(val);
+        }
+
+        public void DisableAudio()
+        {
+            RtcEngine.DisableAudio();
         }
         
         public void JoinChannel()
         {
             var ret = RtcEngine.JoinChannel(_token, _channelName, "", 0);
+            PrepareScreenCapture();
             // RtcEngine.MuteAllRemoteAudioStreams(true);
             Debug.Log("JoinChannel returns: " + ret);
         }
