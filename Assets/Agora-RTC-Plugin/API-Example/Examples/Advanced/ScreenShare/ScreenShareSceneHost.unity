@@ -1212,7 +1212,7 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare.ScreenShare,
           Assembly-CSharp
         m_MethodName: DisableAudio
-        m_Mode: 1
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
