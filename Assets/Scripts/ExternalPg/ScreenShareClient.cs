@@ -130,6 +130,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShareClient
 
         public void MuteLocal(bool val)
         {
+            RtcEngine.SetClientRole(val ? CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE : CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
             RtcEngine.MuteLocalAudioStream(val);
         }
 
@@ -377,7 +378,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShareClient
                 if (transform)
                 {
                     //If render in RawImage. just set rawImage size.
-                    transform.sizeDelta = new Vector2(width / 2, height / 2);
+                    transform.sizeDelta = new Vector2(width / 3 * 2, height / 3 * 2);
                     transform.localScale = videoSourceType == VIDEO_SOURCE_TYPE.VIDEO_SOURCE_SCREEN ? new Vector3(-1, 1, 1) : Vector3.one;
                 }
                 else

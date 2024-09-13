@@ -378,7 +378,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
                 if (transform)
                 {
                     //If render in RawImage. just set rawImage size.
-                    transform.sizeDelta = new Vector2(width / 2, height / 2);
+                    transform.sizeDelta = new Vector2(width / 3 * 2, height / 3 * 2);
                     transform.localScale = videoSourceType == VIDEO_SOURCE_TYPE.VIDEO_SOURCE_SCREEN ? new Vector3(-1, 1, 1) : Vector3.one;
                 }
                 else
