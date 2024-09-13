@@ -1,15 +1,18 @@
-﻿using System;
+using System;
 using System.Linq;
-using UnityEngine;
-using UnityEngine.UI;
+using Agora_RTC_Plugin.API_Example;
+using Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare;
 using Agora.Rtc;
-using UnityEngine.Serialization;
 using io.agora.rtc.demo;
+using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
+using Logger = UnityEngine.Logger;
 
-namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
+namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShareClient
 {
-    public class ScreenShare : MonoBehaviour
-    {
+ public class ScreenShareClient : MonoBehaviour
+{
         [FormerlySerializedAs("appIdInput")]
         [SerializeField]
         private AppIdInput _appIdInput;
@@ -59,6 +62,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
             {
                 InitEngine();
                 SetBasicConfiguration();
+                
 #if UNITY_ANDROID || UNITY_IPHONE
                 GetSourceBtn.gameObject.SetActive(false);
                 WinIdSelect.gameObject.SetActive(false);
@@ -93,11 +97,13 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         {
             RtcEngine = Agora.Rtc.RtcEngine.CreateAgoraRtcEngine();
             UserEventHandler handler = new UserEventHandler(this);
-            RtcEngineContext context = new RtcEngineContext();
-            context.appId = _appID;
-            context.channelProfile = CHANNEL_PROFILE_TYPE.CHANNEL_PROFILE_LIVE_BROADCASTING;
-            context.audioScenario = AUDIO_SCENARIO_TYPE.AUDIO_SCENARIO_DEFAULT;
-            context.areaCode = AREA_CODE.AREA_CODE_GLOB;
+            RtcEngineContext context = new RtcEngineContext
+            {
+                appId = _appID,
+                channelProfile = CHANNEL_PROFILE_TYPE.CHANNEL_PROFILE_LIVE_BROADCASTING,
+                audioScenario = AUDIO_SCENARIO_TYPE.AUDIO_SCENARIO_DEFAULT,
+                areaCode = AREA_CODE.AREA_CODE_GLOB
+            };
             RtcEngine.Initialize(context);
             RtcEngine.InitEventHandler(handler);
             
@@ -111,8 +117,9 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
             RtcEngine.EnableVideo();
             RtcEngine.StopCameraCapture(VIDEO_SOURCE_TYPE.VIDEO_SOURCE_REMOTE);
             
+            
             RtcEngine.SetChannelProfile( CHANNEL_PROFILE_TYPE.CHANNEL_PROFILE_LIVE_BROADCASTING );
-            RtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+            RtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
             
             var config = new AudioTrackConfig();
             // RtcEngine.MuteLocalAudioStream(true);
@@ -235,11 +242,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
                 var windowId = option.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[1];
                 Log.UpdateLog(string.Format(">>>>> Start sharing {0}", windowId));
                 var nRet = RtcEngine.StartScreenCaptureByWindowId(ulong.Parse(windowId), default(Rectangle),
-                        new ScreenCaptureParameters { captureMouseCursor = true, frameRate = 30, dimensions = new VideoDimensions
-                        {
-                            height = 720,
-                            width = 1280
-                        }});
+                        default(ScreenCaptureParameters));
                 this.Log.UpdateLog("StartScreenCaptureByWindowId:" + nRet);
             }
             else
@@ -247,11 +250,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
                 var dispId = uint.Parse(option.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[1]);
                 Log.UpdateLog(string.Format(">>>>> Start sharing display {0}", dispId));
                 var nRet = RtcEngine.StartScreenCaptureByDisplayId(dispId, default(Rectangle),
-                    new ScreenCaptureParameters { captureMouseCursor = true, frameRate = 30, dimensions = new VideoDimensions
-                    {
-                        height = 720,
-                        width = 1280
-                    }});
+                    new ScreenCaptureParameters { captureMouseCursor = true, frameRate = 30 });
                 this.Log.UpdateLog("StartScreenCaptureByDisplayId:" + nRet);
             }
 
@@ -260,7 +259,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
             PublishBtn.gameObject.SetActive(true);
             UnpublishBtn.gameObject.SetActive(true);
             //OnPublishButtonClick();
-            ScreenShare.MakeVideoView(0, "", VIDEO_SOURCE_TYPE.VIDEO_SOURCE_SCREEN);
+            ScreenShareClient.MakeVideoView(0, "", VIDEO_SOURCE_TYPE.VIDEO_SOURCE_SCREEN);
         }
 
         public void OnStopShareBtnClick()
@@ -357,7 +356,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
 
         internal static void MakeVideoView(uint uid, string channelId = "", VIDEO_SOURCE_TYPE videoSourceType = VIDEO_SOURCE_TYPE.VIDEO_SOURCE_CAMERA)
         {
-            if(videoSourceType == VIDEO_SOURCE_TYPE.VIDEO_SOURCE_REMOTE) return;
+            // if(videoSourceType == VIDEO_SOURCE_TYPE.VIDEO_SOURCE_REMOTE) return;
             
             var go = GameObject.Find(uid.ToString());
             if (!ReferenceEquals(go, null))
@@ -445,7 +444,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
             }
 
             // set up transform
-            go.transform.Rotate(0f, 0f, 180);
+            go.transform.Rotate(0f, 180.0f, 180);
             go.transform.localPosition = Vector3.zero;
             go.transform.localScale = new Vector3(3f, 4f, 1f);
 
@@ -470,9 +469,9 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
 
     internal class UserEventHandler : IRtcEngineEventHandler
     {
-        private readonly ScreenShare _desktopScreenShare;
+        private readonly ScreenShareClient _desktopScreenShare;
 
-        internal UserEventHandler(ScreenShare desktopScreenShare)
+        internal UserEventHandler(ScreenShareClient desktopScreenShare)
         {
             _desktopScreenShare = desktopScreenShare;
         }
@@ -500,7 +499,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         public override void OnLeaveChannel(RtcConnection connection, RtcStats stats)
         {
             _desktopScreenShare.Log.UpdateLog("OnLeaveChannel");
-            ScreenShare.DestroyVideoView(connection.localUid);
+            ScreenShareClient.DestroyVideoView(connection.localUid);
         }
 
         public override void OnClientRoleChanged(RtcConnection connection, CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole, ClientRoleOptions newRoleOptions)
@@ -511,14 +510,14 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         public override void OnUserJoined(RtcConnection connection, uint uid, int elapsed)
         {
             _desktopScreenShare.Log.UpdateLog(string.Format("OnUserJoined uid: ${0} elapsed: ${1}", uid, elapsed));
-            ScreenShare.MakeVideoView(uid, _desktopScreenShare.GetChannelName(), VIDEO_SOURCE_TYPE.VIDEO_SOURCE_REMOTE);
+            ScreenShareClient.MakeVideoView(uid, _desktopScreenShare.GetChannelName(), VIDEO_SOURCE_TYPE.VIDEO_SOURCE_REMOTE);
         }
 
         public override void OnUserOffline(RtcConnection connection, uint uid, USER_OFFLINE_REASON_TYPE reason)
         {
             _desktopScreenShare.Log.UpdateLog(string.Format("OnUserOffLine uid: ${0}, reason: ${1}", uid,
                 (int)reason));
-            ScreenShare.DestroyVideoView(uid);
+            ScreenShareClient.DestroyVideoView(uid);
         }
         
         public override void OnStreamMessage(RtcConnection connection, uint remoteUid, int streamId, byte[] data, ulong length, ulong sentTs)
@@ -530,4 +529,4 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
     }
 
     #endregion
-}
+}   

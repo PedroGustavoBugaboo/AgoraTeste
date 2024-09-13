@@ -4465,7 +4465,7 @@ MonoBehaviour:
   ShowIconBtn: {fileID: 713936988}
   IconImage: {fileID: 150881006}
   ThumbImage: {fileID: 2027887730}
-  _dataLogin: {fileID: 0}
+  _dataLogin: {fileID: 11400000, guid: 01454133302a0a444ad240a70d6879a3, type: 2}
 --- !u!1 &1321436643
 GameObject:
   m_ObjectHideFlags: 0

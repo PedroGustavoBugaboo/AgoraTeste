@@ -77,7 +77,6 @@ public class AgoraSignalManager : MonoBehaviour
 
     public void SendMessage(string message)
     {
-        // Cria um data stream se ainda não tiver sido criado
         if (streamId == 0)
         {
             int result = _engine.CreateDataStream(ref streamId, true, true);
@@ -87,8 +86,7 @@ public class AgoraSignalManager : MonoBehaviour
                 return;
             }
         }
-
-        // Converte a mensagem em bytes
+        
         byte[] messageBytes = System.Text.Encoding.UTF8.GetBytes(message);
         int sendResult = _engine.SendStreamMessage(streamId, messageBytes, Convert.ToUInt32(messageBytes.Length));
 
