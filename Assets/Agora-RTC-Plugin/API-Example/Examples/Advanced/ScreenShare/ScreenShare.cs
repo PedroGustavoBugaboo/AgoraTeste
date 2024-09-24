@@ -357,6 +357,10 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
             // create a GameObject and assign to this new user
             var videoSurface = MakeImageSurface(uid.ToString());
             if (ReferenceEquals(videoSurface, null)) return;
+
+            // Definir a rotação local para (0, 0, 0)
+            videoSurface.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
             // configure videoSurface
             videoSurface.SetForUser(uid, channelId, videoSourceType);
             videoSurface.SetEnable(true);
@@ -368,17 +372,18 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
                 {
                     //If render in RawImage. just set rawImage size.
                     transform.sizeDelta = new Vector2(width / 2, height / 2);
-                    transform.localScale = videoSourceType == VIDEO_SOURCE_TYPE.VIDEO_SOURCE_SCREEN ? new Vector3(-1, 1, 1) : Vector3.one;
+                    transform.localScale = videoSourceType == VIDEO_SOURCE_TYPE.VIDEO_SOURCE_SCREEN ? new Vector3(1, 1, 1) : Vector3.one;
                 }
                 else
                 {
                     //If render in MeshRenderer, just set localSize with MeshRenderer
                     float scale = (float)height / (float)width;
-                    videoSurface.transform.localScale = new Vector3(-1, 1, scale);
+                    videoSurface.transform.localScale = new Vector3(1, 1, scale);
                 }
                 Debug.Log("OnTextureSizeModify: " + width + "  " + height);
             };
         }
+
 
         // VIDEO TYPE 1: 3D Object
         private static VideoSurface MakePlaneSurface(string goName)
