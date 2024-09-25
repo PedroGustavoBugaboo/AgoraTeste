@@ -112,6 +112,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         {
             RtcEngine.EnableAudio();
             RtcEngine.EnableVideo();
+            RtcEngine.StopCameraCapture(VIDEO_SOURCE_TYPE.VIDEO_SOURCE_REMOTE);
             
             RtcEngine.MuteLocalAudioStream(false);
             
@@ -157,6 +158,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         {
             int ret = 0;
             ChannelMediaOptions options = new ChannelMediaOptions();
+            options.publishCameraTrack.SetValue(false);
             options.publishScreenTrack.SetValue(true);
             RtcEngine.AdjustRecordingSignalVolume(200);
             RtcEngine.EnableLoopbackRecording(false);
@@ -184,6 +186,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         public void OnUnplishButtonClick()
         {
             ChannelMediaOptions options = new ChannelMediaOptions();
+            options.publishCameraTrack.SetValue(true);
             options.publishScreenTrack.SetValue(false);
 
 #if UNITY_ANDROID || UNITY_IPHONE
@@ -243,7 +246,11 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
                 var windowId = option.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[1];
                 Log.UpdateLog(string.Format(">>>>> Start sharing {0}", windowId));
                 var nRet = RtcEngine.StartScreenCaptureByWindowId(ulong.Parse(windowId), default(Rectangle),
-                        default(ScreenCaptureParameters));
+                    new ScreenCaptureParameters { captureMouseCursor = true, frameRate = 30, dimensions = new VideoDimensions
+                    {
+                        height = 720,
+                        width = 1280
+                    }});
                 this.Log.UpdateLog("StartScreenCaptureByWindowId:" + nRet);
             }
             else
@@ -251,7 +258,11 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
                 var dispId = uint.Parse(option.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[1]);
                 Log.UpdateLog(string.Format(">>>>> Start sharing display {0}", dispId));
                 var nRet = RtcEngine.StartScreenCaptureByDisplayId(dispId, default(Rectangle),
-                    new ScreenCaptureParameters { captureMouseCursor = true, frameRate = 30 });
+                    new ScreenCaptureParameters { captureMouseCursor = true, frameRate = 30, dimensions = new VideoDimensions
+                    {
+                        height = 720,
+                        width = 1280
+                    }});
                 this.Log.UpdateLog("StartScreenCaptureByDisplayId:" + nRet);
             }
 
@@ -282,7 +293,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
             //only work in ios or android
             var config = new ScreenCaptureParameters2();
             config.captureAudio = true;
-            // config.captureVideo = true;
+            config.captureVideo = true;
             config.videoParams.dimensions.width = 960;
             config.videoParams.dimensions.height = 640;
             var nRet = RtcEngine.UpdateScreenCapture(config);
@@ -380,14 +391,14 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
                 if (transform)
                 {
                     //If render in RawImage. just set rawImage size.
-                    transform.sizeDelta = new Vector2(width / 2, height / 2);
-                    transform.localScale = videoSourceType == VIDEO_SOURCE_TYPE.VIDEO_SOURCE_SCREEN ? new Vector3(1, 1, 1) : Vector3.one;
+                    transform.sizeDelta = new Vector2(width / 3 * 2, height / 3 * 2);
+                    transform.localScale = videoSourceType == VIDEO_SOURCE_TYPE.VIDEO_SOURCE_SCREEN ? new Vector3(-1, 1, 1) : Vector3.one;
                 }
                 else
                 {
                     //If render in MeshRenderer, just set localSize with MeshRenderer
                     float scale = (float)height / (float)width;
-                    videoSurface.transform.localScale = new Vector3(1, 1, scale);
+                    videoSurface.transform.localScale = new Vector3(-1, 1, scale);
                 }
                 Debug.Log("OnTextureSizeModify: " + width + "  " + height);
             };
