@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Agora.Rtc;
 using UnityEngine.Serialization;
 using io.agora.rtc.demo;
+using TMPro;
 
 namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
 {
@@ -26,6 +27,9 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         [FormerlySerializedAs("CHANNEL_NAME")]
         [SerializeField]
         private string _channelName = "";
+
+        public TextMeshProUGUI micButton;
+        public TextMeshProUGUI screenAudioMic;
 
         public Text LogText;
         internal Logger Log;
@@ -102,19 +106,19 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
             RtcEngine.InitEventHandler(handler);
             
             GameObject.Find("InitButton").GetComponent<Button>().onClick.Invoke();
-            Debug.Log("Iniciouuuuu");
         }
 
         private void SetBasicConfiguration()
         {
             RtcEngine.EnableAudio();
-            RtcEngine.EnableVideo();
+            // RtcEngine.EnableVideo();
+            
+            RtcEngine.MuteLocalAudioStream(false);
             
             RtcEngine.SetChannelProfile( CHANNEL_PROFILE_TYPE.CHANNEL_PROFILE_LIVE_BROADCASTING );
             RtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
             
             var config = new AudioTrackConfig();
-            // RtcEngine.MuteLocalAudioStream(true);
             trackId = RtcEngine.CreateCustomAudioTrack(AUDIO_TRACK_TYPE.AUDIO_TRACK_DIRECT, config);
         }
 
@@ -123,8 +127,15 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         public void MuteLocal(bool val)
         {
             RtcEngine.MuteLocalAudioStream(val);
+            micButton.text = val ? "Mic muted" : "Mic opened";
         }
 
+        public void EnableLoopBack(bool val)
+        {
+            RtcEngine.EnableLoopbackRecording(val);
+            screenAudioMic.text = val ? "Screen muted" : "Screen opened";
+        }
+        
         public void DisableAudio()
         {
             RtcEngine.DisableAudio();
@@ -134,7 +145,6 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         {
             var ret = RtcEngine.JoinChannel(_token, _channelName, "", 0);
             PrepareScreenCapture();
-            // RtcEngine.MuteAllRemoteAudioStreams(true);
             Debug.Log("JoinChannel returns: " + ret);
         }
 
@@ -147,9 +157,9 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         {
             int ret = 0;
             ChannelMediaOptions options = new ChannelMediaOptions();
-            options.publishCameraTrack.SetValue(false);
             options.publishScreenTrack.SetValue(true);
             RtcEngine.AdjustRecordingSignalVolume(200);
+            RtcEngine.EnableLoopbackRecording(false);
 
 #if UNITY_ANDROID || UNITY_IPHONE
             options.publishScreenCaptureAudio.SetValue(true);
@@ -174,7 +184,6 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         public void OnUnplishButtonClick()
         {
             ChannelMediaOptions options = new ChannelMediaOptions();
-            options.publishCameraTrack.SetValue(true);
             options.publishScreenTrack.SetValue(false);
 
 #if UNITY_ANDROID || UNITY_IPHONE

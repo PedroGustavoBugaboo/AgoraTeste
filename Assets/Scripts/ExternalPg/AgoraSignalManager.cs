@@ -172,9 +172,4 @@ public class AgoraSignalManager : MonoBehaviour
             }
         }
     }
-
-    public void EnableLoopBack(bool val)
-    {
-        _engine.EnableLoopbackRecording(val);
-    }
 }
