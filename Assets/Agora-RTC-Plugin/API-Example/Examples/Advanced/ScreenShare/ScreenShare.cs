@@ -111,7 +111,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.ScreenShare
         private void SetBasicConfiguration()
         {
             RtcEngine.EnableAudio();
-            // RtcEngine.EnableVideo();
+            RtcEngine.EnableVideo();
             
             RtcEngine.MuteLocalAudioStream(false);
             
